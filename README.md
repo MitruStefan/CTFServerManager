@@ -11,7 +11,9 @@ Discord Bot with useful features to manage the team's Discord server for team [>
 ## Slash commands
 
 -   /ping - Checks the bot's latency.
--   /remind_me [time] [message] - Set a reminder for yourself. Time in minutes.
+-   /remind_me [time] [message]
+-   /setup [ctf_name]
+-   /finish [ctf_name]
 
 ## Features
 
@@ -19,5 +21,4 @@ Discord Bot with useful features to manage the team's Discord server for team [>
 
 ## To-do
 
--   Add slash commands variants for setup and finish.
 -   Add toggle for the role add/remove feature? Maybe in env?

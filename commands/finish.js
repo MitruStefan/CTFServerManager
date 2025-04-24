@@ -23,3 +23,40 @@ module.exports.message = async msg => {
 
 	await msg.channel.send(`Done! <@${process.env.OWNER_ID}>`);
 };
+
+module.exports.interaction = async interaction => {
+	if (interaction.user.id !== process.env.OWNER_ID) {
+		return interaction.reply({
+			content: 'You are not authorized to use this command.',
+			flags: [djs.MessageFlags.Ephemeral],
+		});
+	}
+	const ctf = interaction.options.getString('ctf_name');
+
+	await interaction.deferReply();
+
+	const category = interaction.guild.channels.cache.find(c => c.name === ctf && c.type === djs.ChannelType.GuildCategory);
+
+	if (!category) return interaction.editReply(`Category ${ctf} not found.`);
+
+	await category.setName(`[finished] ${ctf}`);
+
+	const role = interaction.guild.roles.cache.find(r => r.name === ctf);
+	if (role) {
+		await role.delete();
+	} else {
+		await interaction.editReply(`Done! <@${process.env.OWNER_ID}>\nBut role ${ctf} not found`);
+		console.log(`Role ${ctf} not found`);
+	}
+
+	await interaction.editReply(`Done! <@${process.env.OWNER_ID}>`);
+};
+
+module.exports.application_command = () => {
+	return new djs.SlashCommandBuilder()
+		.setName('finish')
+		.setDescription('Mark a CTF as finished, deleting the role and renaming the category')
+		.setDefaultMemberPermissions(djs.PermissionFlagsBits.Administrator)
+		.setContexts(djs.InteractionContextType.Guild)
+		.addStringOption(option => option.setName('ctf_name').setDescription('The name of the CTF to finish').setRequired(true));
+};
