@@ -7,6 +7,8 @@ Discord Bot with useful features to manage the team's Discord server for team [>
 -   !remind_me [time] [message] - Set a reminder for yourself. Time in minutes.
 -   !setup [ctf_name] - Setup a new CTF in the server. This will create channels and a new role for the CTF.
 -   !finish [ctf_name] - Finish a CTF. This will delete the role and prepend the category with `[finished]`
+-   !gpt (search) [message] - Prompt an AI with a message and possibility for web search. Returns a message with the AI's response.
+-   !speak [voice] [instruction]\n[message] - Prompt a TTS AI with a specific voice, instruction and message.
 
 ## Slash commands
 
@@ -14,6 +16,7 @@ Discord Bot with useful features to manage the team's Discord server for team [>
 -   /remind_me [time] [message]
 -   /setup [ctf_name]
 -   /finish [ctf_name]
+-   /generate [message] [search] - Prompt an AI with a message and a boolean value for web search. Returns a message with the AI's response.
 
 ## Features
 

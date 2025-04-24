@@ -37,19 +37,14 @@ client.on(djs.Events.MessageCreate, async msg => {
 		await commands['setup'].message(msg);
 	} else if (msg.content.startsWith('!finish')) {
 		await commands['finish'].message(msg);
+	} else if (msg.content.startsWith('!gpt')) {
+		await commands['generate'].message(msg);
+	} else if (msg.content.startsWith('!speak')) {
+		await commands['speak'].message(msg);
 	}
-
-	//Disabled, llm's are expensive
-
-	// else if (msg.content.startsWith('!gpt')) {
-	// 	await commands['generate'].message(msg);
-	// } else if (msg.content.startsWith('!prompt')) {
-	// 	await commands['generate'].prompt(msg);
-	// }
 });
 
 client.on(djs.Events.InteractionCreate, async interaction => {
-	if (!interaction.member) return;
 	try {
 		if (interaction.isCommand()) {
 			const command = commands[interaction.commandName];
