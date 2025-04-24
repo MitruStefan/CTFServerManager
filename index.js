@@ -16,6 +16,7 @@ const client = new djs.Client({
 // When the client is ready
 client.once(djs.Events.ClientReady, async c => {
 	console.log(`Ready! Logged in as ${c.user.tag} at ${new Date().toLocaleString()}`);
+	require('./deploy-commands.js')(client);
 	const msgs = await client.channels.cache.get(process.env.ANNOUNCEMENTS).messages.fetch();
 	console.log(`Fetched ${msgs.size} messages from the ${client.channels.cache.get(process.env.ANNOUNCEMENTS).name} channel.`);
 });
