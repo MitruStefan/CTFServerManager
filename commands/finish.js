@@ -11,7 +11,15 @@ module.exports.message = async msg => {
 
 	if (!category) return msg.reply(`Category ${ctf} not found.`);
 
-	await category.setName(`[finished] ${ctf}`);
+	await Promise.all([
+		category.setName(`[finished] ${ctf}`),
+		category.permissionOverwrites.set([
+			{
+				id: msg.guild.id,
+				allow: [djs.PermissionFlagsBits.ViewChannel],
+			},
+		]),
+	]);
 
 	const role = msg.guild.roles.cache.find(r => r.name === ctf);
 	if (role) {
@@ -39,7 +47,15 @@ module.exports.interaction = async interaction => {
 
 	if (!category) return interaction.editReply(`Category ${ctf} not found.`);
 
-	await category.setName(`[finished] ${ctf}`);
+	await Promise.all([
+		category.setName(`[finished] ${ctf}`),
+		category.permissionOverwrites.set([
+			{
+				id: interaction.guild.id,
+				allow: [djs.PermissionFlagsBits.ViewChannel],
+			},
+		]),
+	]);
 
 	const role = interaction.guild.roles.cache.find(r => r.name === ctf);
 	if (role) {

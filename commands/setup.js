@@ -10,7 +10,6 @@ const setup = async (guild, ctf) => {
 	const category = await guild.channels.create({
 		name: ctf,
 		type: djs.ChannelType.GuildCategory,
-		position: 2,
 		permissionOverwrites: [
 			{
 				id: guild.id,
@@ -22,6 +21,8 @@ const setup = async (guild, ctf) => {
 			},
 		],
 	});
+
+	await category.setPosition(3);
 
 	//Create 3 text channels, link-echipa, chat, solutii and a voice called voice
 	const channels = ['link-echipa', 'chat', 'solutii'];
