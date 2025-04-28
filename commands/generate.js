@@ -61,14 +61,13 @@ module.exports.message = async msg => {
 	}
 
 	try {
-		console.log(messages);
 		const responseData = await client.chat.completions.create({
-			model: `gpt-4.1-mini${search ? ':online' : ''}`,
+			model: `${process.env.MODEL}${search ? ':online' : ''}`,
 			messages,
 		});
 		if (!responseData?.choices?.length) return msg.reply('No response.');
 		const fullResponse = responseData.choices[0].message.content; //+ `\n\nRemaining credits: ${responseData.usage.zj_usage.credits_remaining}`;
-		console.log(`Remaining credits: ${responseData.usage.zj_usage.credits_remaining}`);
+		//console.log(`Remaining credits: ${responseData.usage.zj_usage.credits_remaining}`);
 		if (fullResponse.length > 2000) {
 			const chunks = [];
 			let startPos = 0;
@@ -115,7 +114,7 @@ module.exports.interaction = async interaction => {
 	try {
 		console.log(messages);
 		const responseData = await client.chat.completions.create({
-			model: `gpt-4.1-mini${search ? ':online' : ''}`,
+			model: `${process.env.MODEL}${search ? ':online' : ''}`,
 			messages: messages,
 		});
 
