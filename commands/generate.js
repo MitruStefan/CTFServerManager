@@ -31,7 +31,7 @@ module.exports.message = async msg => {
 	let replyMessage;
 	if (msg.reference) replyMessage = await msg.channel.messages.fetch({ message: msg.reference.messageId });
 	while (replyMessage) {
-		if (replyMessage.author.id === process.env.CLIENTID) {
+		if (replyMessage.author.id === process.env.CLIENT_ID) {
 			messages.push({ role: 'assistant', content: replyMessage.content });
 		} else {
 			messages.push({ role: 'user', content: replyMessage.content.replace('!gpt ', '') });

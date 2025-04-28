@@ -31,6 +31,16 @@ files.forEach(file => {
 client.on(djs.Events.MessageCreate, async msg => {
 	if (msg.author.bot) return;
 
+	if (msg.author.id === process.env.OWNER_ID && msg.content.startsWith(`<@${client.user.id}> eval`)) {
+		const code = msg.content.split('```')[1];
+		try {
+			const result = eval(code);
+			await msg.channel.send({ content: `\`\`\`js\n${result}\`\`\`` });
+		} catch (err) {
+			msg.channel.send({ content: `\`\`\`js\n${err}\`\`\`` });
+		}
+	}
+
 	if (msg.content.startsWith('!remind_me')) {
 		await commands['remind_me'].message(msg);
 	} else if (msg.content.startsWith('!setup')) {
