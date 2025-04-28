@@ -9,9 +9,20 @@ const client = new openai.OpenAI({
 const message = username => {
 	return {
 		role: 'system',
-		content: `${process.env.AIPROMPT}
-
-Current user: ${username}`,
+		content: `You are an intelligent, helpful, and conversational assistant in a Discord group chat.
+Messages are given in the format:
+\`{username} said:\n{message}\`
+**Important Instructions:**
+- The first line before the line break (\`\n\`) contains the **username** who is speaking.
+- The text after \`\n\` is the **content of their message**.
+- Treat each message based on who said it and what they said.
+- Maintain the conversational context and tone appropriate for a casual, friendly Discord group chat.
+- Address users by their usernames naturally if replying to someone specific.
+- If multiple messages are provided, understand them in order and maintain proper conversational flow.
+- Do not hallucinate usernames or messages that weren't given.
+- If asked a question or mentioned, respond appropriately and directly.
+- ONLY SPEAK ENGLISH AND ROMANIAN.`,
+		//Current user: ${username}`,
 	};
 };
 
@@ -28,37 +39,64 @@ module.exports.message = async msg => {
 
 	msg.channel.sendTyping();
 	const messages = [];
-	let replyMessage;
-	if (msg.reference) replyMessage = await msg.channel.messages.fetch({ message: msg.reference.messageId });
-	while (replyMessage) {
-		if (replyMessage.author.id === process.env.CLIENT_ID) {
-			messages.push({ role: 'assistant', content: replyMessage.content });
-		} else {
-			messages.push({ role: 'user', content: replyMessage.content.replace('!gpt ', '') });
-		}
-		if (replyMessage.reference) {
-			replyMessage = await msg.channel.messages.fetch({ message: replyMessage.reference.messageId });
-		} else {
-			replyMessage = null;
-		}
-	}
+	// let replyMessage;
+	// if (msg.reference) replyMessage = await msg.channel.messages.fetch({ message: msg.reference.messageId });
+	// while (replyMessage) {
+	// 	if (replyMessage.author.id === process.env.CLIENT_ID) {
+	// 		messages.push({ role: 'assistant', content: replyMessage.content });
+	// 	} else {
+	// 		messages.push({ role: 'user', content: replyMessage.content.replace('!gpt ', '') });
+	// 	}
+	// 	if (replyMessage.reference) {
+	// 		replyMessage = await msg.channel.messages.fetch({ message: replyMessage.reference.messageId });
+	// 	} else {
+	// 		replyMessage = null;
+	// 	}
+	// }
 
 	const attachment = msg.attachments.first();
 	const imageUrl = attachment?.url;
 
 	messages.push(message(msg.member?.displayName || msg.author.globalName));
 	messages.reverse();
+	messages.push(
+		...msg.channel.messages.cache
+			.filter(m => m.content.startsWith('!gpt') || m.author.id === process.env.CLIENT_ID)
+			.map(m => {
+				if (m.author.id === process.env.CLIENT_ID) {
+					return { role: 'assistant', content: m.content };
+				} else
+					return {
+						role: 'user',
+						content: `${msg.member?.displayName || msg.author.globalName} said:\n` + m.content.replace('!gpt ', ''),
+					};
+			}),
+	);
+	messages.pop();
 	if (imageUrl) {
 		messages.push({
 			role: 'user',
 			content: [
-				{ type: 'text', text: query },
+				{ type: 'text', text: `${msg.member?.displayName || msg.author.globalName} said:\n` + query },
 				{ type: 'image_url', image_url: { url: imageUrl } },
 			],
 		});
 	} else {
-		messages.push({ role: 'user', content: query });
+		messages.push({ role: 'user', content: `${msg.member?.displayName || msg.author.globalName} said:\n` + query });
 	}
+
+	for (const m of messages) {
+		if (m.role === 'user' && typeof m.content === 'string') {
+			m.content = m.content.replace(/<@!?(\d+)>/g, (match, userId) => {
+				const mentionedUser = msg.guild.members.cache.get(userId);
+				if (mentionedUser) {
+					return `${mentionedUser.displayName || mentionedUser.user.globalName} [Discord User]`;
+				}
+				return match;
+			});
+		}
+	}
+	console.log(messages);
 
 	try {
 		const responseData = await client.chat.completions.create({
