@@ -49,8 +49,15 @@ client.on(djs.Events.MessageCreate, async msg => {
 		await commands['finish'].message(msg);
 	} else if (msg.content.startsWith('!gpt')) {
 		await commands['generate'].message(msg);
-	} else if (msg.content.startsWith('!speak')) {
-		await commands['speak'].message(msg);
+	} else if (msg.content.startsWith('!cleanup')) {
+		await commands['cleanup'].message(msg);
+	}
+	// else if (msg.content.startsWith('!speak')) {
+	// 	await commands['speak'].message(msg);
+	// }
+
+	if (msg.author.id == '1366047866975420447') {
+		await commands['generate'].message(msg);
 	}
 });
 
