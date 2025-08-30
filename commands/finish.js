@@ -16,6 +16,10 @@ module.exports.message = async msg => {
 		category.permissionOverwrites.set([
 			{
 				id: msg.guild.id,
+				deny: [djs.PermissionFlagsBits.ViewChannel],
+			},
+			{
+				id: process.env.MEMBER_ROLE,
 				allow: [djs.PermissionFlagsBits.ViewChannel],
 			},
 		]),
@@ -54,7 +58,11 @@ module.exports.interaction = async interaction => {
 		category.setName(`[finished] ${ctf}`),
 		category.permissionOverwrites.set([
 			{
-				id: interaction.guild.id,
+				id: msg.guild.id,
+				deny: [djs.PermissionFlagsBits.ViewChannel],
+			},
+			{
+				id: process.env.MEMBER_ROLE,
 				allow: [djs.PermissionFlagsBits.ViewChannel],
 			},
 		]),
