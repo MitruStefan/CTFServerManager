@@ -29,6 +29,9 @@ module.exports.message = async msg => {
 		console.log(`Role ${ctf} not found`);
 	}
 
+	const childChannels = msg.guild.channels.cache.filter(ch => ch.parentId === category.id);
+	await Promise.all(childChannels.map(ch => ch.lockPermissions().catch(() => null)));
+
 	await msg.channel.send(`Done! <@${process.env.OWNER_ID}>`);
 };
 
@@ -64,6 +67,9 @@ module.exports.interaction = async interaction => {
 		await interaction.editReply(`Done! <@${process.env.OWNER_ID}>\nBut role ${ctf} not found`);
 		console.log(`Role ${ctf} not found`);
 	}
+
+	const childChannels = interaction.guild.channels.cache.filter(ch => ch.parentId === category.id);
+	await Promise.all(childChannels.map(ch => ch.lockPermissions().catch(() => null)));
 
 	await interaction.editReply(`Done! <@${process.env.OWNER_ID}>`);
 };
